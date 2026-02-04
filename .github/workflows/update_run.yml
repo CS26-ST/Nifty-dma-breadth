@@ -1,11 +1,59 @@
-       - name: Fetch Nifty500 close
-        run: python fetch_prices.py --universe nifty500 --symbols_csv universes/nifty500.csv --period 2y --auto_adjust
-       - name: DMA breadth Nifty500
-        run: python breadth_dma.py --universe nifty500 --close_csv data/nifty500/close.csv --fast 50 --slow 200
+name: Update Nifty DMA Breadth
 
-      # Later add this block for Nifty750
-      # - name: Fetch Nifty750 close
-      #   run: python fetch_prices.py --universe nifty750 --symbols_csv universes/nifty750.csv --period 2y --auto_adjust
-      #
-      # - name: DMA breadth Nifty750
-      #   run: python breadth_dma.py --universe nifty750 --close_csv data/nifty750/close.csv --fast 50 --slow 200
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs Monday–Friday
+    - cron: "30 15 * * 1-5"
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # -----------------------------
+      # FETCH CLOSE PRICES (NIFTY 500)
+      # -----------------------------
+      - name: Fetch Nifty500 close prices
+        run: |
+          python generate_close_prices.py \
+            --universe nifty500 \
+            --symbols_csv universes/nifty500_symbols.csv \
+            --period 2y
+
+      # -----------------------------
+      # DMA BREADTH (50 & 200 DMA)
+      # -----------------------------
+      - name: Compute Nifty500 DMA breadth
+        run: |
+          python breadth_dma.py \
+            --universe nifty500 \
+            --close_csv data/nifty500/close.csv \
+            --fast 50 \
+            --slow 200
+
+      # -----------------------------
+      # COMMIT GENERATED FILES
+      # -----------------------------
+      - name: Commit & push updates
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data output images
+          git commit -m "Update Nifty500 DMA breadth" || echo "No changes to commit"
+          git push
