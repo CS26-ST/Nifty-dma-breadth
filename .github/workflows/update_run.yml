@@ -1,0 +1,38 @@
+name: Update Nifty500 data + DMA breadth chart
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 15 * * 1-5"
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate close prices
+        run: python generate_close_prices.py
+
+      - name: Compute DMA breadth
+        run: python compute_dma_breadth.py
+
+      - name: Commit & push outputs
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data output images
+          git commit -m "Update Nifty500 data + DMA breadth chart" || echo "No changes"
+          git push
