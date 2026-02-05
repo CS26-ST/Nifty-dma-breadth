@@ -34,7 +34,7 @@ jobs:
           python generate_close_prices.py \
             --universe nifty500 \
             --symbols_csv universes/nifty500_symbols.csv \
-            --period 2y
+            --period 6mo
 
       # -----------------------------
       # DMA BREADTH (50 & 200 DMA)
