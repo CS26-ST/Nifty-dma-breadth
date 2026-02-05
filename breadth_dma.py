@@ -25,7 +25,7 @@ def main():
     df = df.apply(pd.to_numeric, errors="coerce")
 
     coverage = df.notna().mean(axis=0)
-    df = df[coverage[coverage >= args.min_coverage].index]
+    # df = df[coverage[coverage >= args.min_coverage].index]
 
     dma_fast = df.rolling(args.fast, min_periods=args.fast).mean()
     dma_slow = df.rolling(args.slow, min_periods=args.slow).mean()
