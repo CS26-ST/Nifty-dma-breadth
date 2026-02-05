@@ -33,7 +33,8 @@ def main():
     above_fast = (df > dma_fast).where(dma_fast.notna())
     above_slow = (df > dma_slow).where(dma_slow.notna())
 
-    valid_fast = above_fast.notna().sum(axis=1)
+    valid_fast = above_fast.notna().sum(axis=1).astype(float)
+    valid_fast = valid_fast.replace(0, pd.NA)
     valid_slow = above_slow.notna().sum(axis=1)
 
     breadth_fast = (above_fast.sum(axis=1) / valid_fast) * 100
