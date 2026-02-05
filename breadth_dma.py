@@ -54,6 +54,10 @@ def main():
     }).dropna()
     # keep only last 1 year (252 trading days)
     out = out.tail(252)
+    # round breadth percentages to whole numbers
+    out[f"pct_above_{args.fast}dma"] = out[f"pct_above_{args.fast}dma"].round(0)
+    out[f"pct_above_{args.slow}dma"] = out[f"pct_above_{args.slow}dma"].round(0)
+
     out_csv = os.path.join("output", f"{args.universe}_dma_breadth.csv")
     out_img = os.path.join("images", f"{args.universe}_dma_breadth.png")
 
