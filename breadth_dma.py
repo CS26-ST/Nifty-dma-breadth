@@ -61,7 +61,6 @@ def main():
     out_csv = os.path.join("output", f"{args.universe}_dma_breadth.csv")
     out_img = os.path.join("images", f"{args.universe}_dma_breadth.png")
 
-    out.to_csv(out_csv)
 
     plt.figure(figsize=(14, 6))
     plt.plot(out.index, out[f"pct_above_{args.fast}dma"], label=f"% Above {args.fast}DMA")
@@ -78,6 +77,16 @@ def main():
     plt.tight_layout()
     plt.savefig(out_img, dpi=200)
 
+    # ---------- CSV formatting (after plot, so chart uses numeric) ----------
+    # round breadth percentages to whole numbers
+    out[f"pct_above_{args.fast}dma"] = out[f"pct_above_{args.fast}dma"].round(0)
+    out[f"pct_above_{args.slow}dma"] = out[f"pct_above_{args.slow}dma"].round(0)
+    
+    # convert to "33%" text for CSV (display only)
+    out[f"pct_above_{args.fast}dma"] = out[f"pct_above_{args.fast}dma"].astype("Int64").astype(str) + "%"
+    out[f"pct_above_{args.slow}dma"] = out[f"pct_above_{args.slow}dma"].astype("Int64").astype(str) + "%"
+    # ----------------------------------------------------------------------
+    out.to_csv(out_csv, index=True)
     print("Saved:", out_csv)
     print("Saved:", out_img)
 
