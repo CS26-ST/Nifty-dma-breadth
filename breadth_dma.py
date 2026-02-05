@@ -35,7 +35,8 @@ def main():
 
     valid_fast = above_fast.notna().sum(axis=1).astype(float)
     valid_fast = valid_fast.replace(0, pd.NA)
-    valid_slow = above_slow.notna().sum(axis=1)
+    valid_slow = above_slow.notna().sum(axis=1).astype(float)
+    valid_slow = valid_slow.replace(0, pd.NA)
 
     breadth_fast = (above_fast.sum(axis=1) / valid_fast) * 100
     breadth_slow = (above_slow.sum(axis=1) / valid_slow) * 100
