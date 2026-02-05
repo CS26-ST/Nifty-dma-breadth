@@ -52,7 +52,8 @@ def main():
         f"valid_stocks_{args.fast}dma": valid_fast,
         f"valid_stocks_{args.slow}dma": valid_slow,
     }).dropna()
-
+    # keep only last 1 year (252 trading days)
+    out = out.tail(252)
     out_csv = os.path.join("output", f"{args.universe}_dma_breadth.csv")
     out_img = os.path.join("images", f"{args.universe}_dma_breadth.png")
 
